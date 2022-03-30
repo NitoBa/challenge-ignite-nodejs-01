@@ -9,7 +9,7 @@ const checksExistsUserAccount = (request, response, next) => {
     return response.status(404).json({ error: 'User not found' });
   }
 
-  request.userId = user.id;
+  request.user = user;
   next()
 }
 

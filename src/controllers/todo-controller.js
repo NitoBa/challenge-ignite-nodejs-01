@@ -3,15 +3,13 @@ const { v4: uuidv4 } = require('uuid');
 
 const TodoController = {
   index: (request, response) => {
-    const { userId } = request;
-    
-    const user = users.find(user => user.id === userId);
-    
+    const { user } = request;
+
     return response.json(user.todos);
   },
   
   create: (request, response) => {
-    const { userId } = request;
+    const { user } = request;
     const { title, deadline } = request.body;
 
     if (!title || !deadline) {
@@ -26,15 +24,13 @@ const TodoController = {
       created_at: new Date(),
     }
 
-    const user = users.find(user => user.id === userId)
-
     user.todos.push(todo);
 
     return response.status(201).json(todo);
   },
 
   update: (request, response) => {
-    const { userId } = request;
+    const { user } = request;
     const { id } = request.params;
     const { title, deadline } = request.body;
   
@@ -45,8 +41,6 @@ const TodoController = {
     if (!title || !deadline) {
       return response.status(400).json({ error: 'Missing title or deadline' });
     }
-  
-    const user = users.find(user => user.id === userId);
   
     const todoIndex = user.todos.findIndex(todo => todo.id === id);
   
@@ -63,12 +57,11 @@ const TodoController = {
     return response.json(user.todos[todoIndex]);
   },
   updatePatch: (request, response) => {
-    const { userId } = request
+    const { user } = request;
     const { id } = request.params;
   
     if (!id) return response.status(400).json({ error: 'Missing todo id' });
-  
-    const user = users.find(user => user.id === userId);
+
     const todoIndex = user.todos.findIndex(todo => todo.id === id);
   
     if (todoIndex < 0) {
@@ -83,12 +76,11 @@ const TodoController = {
   },
 
   delete: (request, response) => {
-    const { userId } = request
+    const { user } = request;
+
     const { id } = request.params;
   
     if (!id) return response.status(400).json({ error: 'Missing todo id' });
-  
-    const user = users.find(user => user.id === userId);
   
     const todoIndex = user.todos.findIndex(todo => todo.id === id);
   
