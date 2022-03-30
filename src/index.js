@@ -82,29 +82,32 @@ app.post('/todos', checksExistsUserAccount, (request, response) => {
 app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
   const { userId } = request;
   const { id } = request.params;
-
   const { title, deadline, done } = request.body;
 
-  if (!title || !deadline || !done) {
+  if (!id) {
+    return response.status(400).json({ error: 'Missing todo id' });
+  }
+
+  if (!title || !deadline || done === undefined) {
     return response.status(400).json({ error: 'Missing title, deadline or done' });
   }
 
   const user = users.find(user => user.id === userId);
 
-  const todo = user.todos.findIndex(todo => todo.id === id);
+  const todoIndex = user.todos.findIndex(todo => todo.id === id);
 
-  if (todo < 0) {
+  if (todoIndex < 0) {
     return response.status(404).json({ error: 'Todo not found' });
   }
 
-  user.todos[todo] = {
-    id,
+  user.todos[todoIndex] = {
+    ...user.todos[todoIndex],
     title,
+    done,
     deadline: new Date(deadline),
   }
 
-
-
+  return response.json(user.todos[todoIndex]);
 });
 
 app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
