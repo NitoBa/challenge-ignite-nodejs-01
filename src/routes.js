@@ -1,6 +1,7 @@
 const { Router } = require('express');
 
 const checksExistsUserAccount = require('./middlewares/check-exists-user-account.js');
+const checksExistsTodo = require('./middlewares/check-exists-todo.js');
 const UserController = require('./controllers/user-controller');
 const TodoController = require('./controllers/todo-controller');
 
@@ -12,10 +13,10 @@ router.get('/todos', checksExistsUserAccount, TodoController.index);
 
 router.post('/todos', checksExistsUserAccount, TodoController.create);
 
-router.put('/todos/:id', checksExistsUserAccount, TodoController.update);
+router.put('/todos/:id', checksExistsUserAccount, checksExistsTodo, TodoController.update);
 
-router.patch('/todos/:id/done', checksExistsUserAccount, TodoController.updatePatch);
+router.patch('/todos/:id/done', checksExistsUserAccount, checksExistsTodo, TodoController.updatePatch);
 
-router.delete('/todos/:id', checksExistsUserAccount, TodoController.delete);
+router.delete('/todos/:id', checksExistsUserAccount, checksExistsTodo, TodoController.delete);
 
 module.exports = router

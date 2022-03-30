@@ -1,4 +1,3 @@
-const { users } = require('../data/users.js');
 const { v4: uuidv4 } = require('uuid');
 
 const TodoController = {
@@ -30,7 +29,7 @@ const TodoController = {
   },
 
   update: (request, response) => {
-    const { user } = request;
+    const { user, todo, todoIndex } = request;
     const { id } = request.params;
     const { title, deadline } = request.body;
   
@@ -41,52 +40,32 @@ const TodoController = {
     if (!title || !deadline) {
       return response.status(400).json({ error: 'Missing title or deadline' });
     }
+
+    todo.title = title;
+    todo.deadline = new Date(deadline);
+
+    user.todos[todoIndex] = todo; 
   
-    const todoIndex = user.todos.findIndex(todo => todo.id === id);
-  
-    if (todoIndex < 0) {
-      return response.status(404).json({ error: 'Todo not found' });
-    }
-  
-    user.todos[todoIndex] = {
-      ...user.todos[todoIndex],
-      title,
-      deadline: new Date(deadline),
-    }
-  
-    return response.json(user.todos[todoIndex]);
+    return response.json(todo);
   },
   updatePatch: (request, response) => {
-    const { user } = request;
+    const { user, todo, todoIndex } = request;
     const { id } = request.params;
   
     if (!id) return response.status(400).json({ error: 'Missing todo id' });
 
-    const todoIndex = user.todos.findIndex(todo => todo.id === id);
-  
-    if (todoIndex < 0) {
-      return response.status(404).json({ error: 'Todo not found' });
-    }
-  
-    user.todos[todoIndex] = {
-      ...user.todos[todoIndex],
-      done: true
-    }
-    return response.status(200).json(user.todos[todoIndex]);
+    todo.done = true
+    user.todos[todoIndex] = todo
+
+    return response.status(200).json(todo);
   },
 
   delete: (request, response) => {
-    const { user } = request;
+    const { user, todoIndex } = request;
 
     const { id } = request.params;
   
     if (!id) return response.status(400).json({ error: 'Missing todo id' });
-  
-    const todoIndex = user.todos.findIndex(todo => todo.id === id);
-  
-    if (todoIndex < 0) {
-      return response.status(404).json({ error: 'Todo not found' });
-    }
   
     user.todos.splice(todoIndex, 1);
   
